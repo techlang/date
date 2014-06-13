@@ -18,11 +18,17 @@ class DateTime extends \DateTime
      *
      * @param string $time
      * @param \DateTimeZone $timezone
+     *
+     * @throws \Exception
      * @return DateTime
      * @link http://php.net/manual/en/datetime.construct.php
      */
-    public function __construct($time = 'now', \DateTimeZone $timezone = null)
+    public function __construct($time = 'now', $timezone = null)
     {
+        if (!is_null($timezone) && !$timezone instanceof \DateTimeZone) {
+            throw new \Exception('DateTime::__construct() expects parameter 2 to be DateTimeZone, ' . gettype($timezone) . ' given');
+        }
+
         parent::__construct($time, $timezone);
         $this->realDay = $this->format('j');
     }
@@ -33,15 +39,22 @@ class DateTime extends \DateTime
      * @param string $format Format accepted by date().
      * @param string $time String representing the time.
      * @param \DateTimeZone $timezone A DateTimeZone object representing the desired time zone.
+     *
+     * @throws \Exception
      * @return DateTime
      * @link http://php.net/manual/en/datetime.createfromformat.php
      */
-    public static function createFromFormat($format, $time, \DateTimeZone $timezone = null)
+    public static function createFromFormat($format, $time, $timezone = null)
     {
         if (is_null($timezone)) {
             $object = parent::createFromFormat($format, $time);
         }
         else {
+            if (!$timezone instanceof \DateTimeZone) {
+                $errorMessage = "DateTime::createFromFormat() expects parameter 3 to be DateTimeZone, " . gettype($timezone) . " given";
+                trigger_error($errorMessage, E_USER_WARNING);
+                return false;
+            }
             $object = parent::createFromFormat($format, $time, $timezone);
         }
 
@@ -55,8 +68,14 @@ class DateTime extends \DateTime
      * @return DateTime
      * @link http://php.net/manual/en/datetime.add.php
      */
-    public function add(\DateInterval $interval)
+    public function add($interval)
     {
+        if (!$interval instanceof \DateInterval) {
+            $errorMessage = "DateTime::add() expects parameter 1 to be DateInterval, " . gettype($interval) . " given";
+            trigger_error($errorMessage, E_USER_WARNING);
+            return false;
+        }
+
         if (0 == $interval->m) {
             // shortcut if we don't have months to add (these are the tricky ones)
             return parent::add($interval);
