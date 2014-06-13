@@ -4,6 +4,8 @@
  * @date 12/06/2014
  */
 
+error_reporting(E_ALL | E_STRICT);
+
 $dir = dirname(__FILE__);
 $found = false;
 while (!$found) {
