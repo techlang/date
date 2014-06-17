@@ -112,4 +112,5 @@ class DateTimeTest extends \PHPUnit_Framework_TestCase
         // Then
         $this->assertEquals('2000-03-01 00:00:00', $date->format('Y-m-d H:i:s'));
     }
+
 }
