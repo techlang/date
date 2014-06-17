@@ -8,3 +8,10 @@ before_script:
   - composer install
 
 script: phpunit --configuration tests/phpunit.xml
+
+notifications:
+  email:
+    recipients:
+      - idinu@techlang.ro
+    on_success: change
+    on_failure: always
