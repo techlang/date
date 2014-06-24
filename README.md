@@ -1,4 +1,9 @@
 # \TechLang\DateTime
+[![Build Status](https://travis-ci.org/techlang/date.svg?branch=master)](https://travis-ci.org/techlang/date)
+[![Latest Stable Version](https://poser.pugx.org/techlang/date/v/stable.svg)](https://packagist.org/packages/techlang/date)
+[![Latest Unstable Version](https://poser.pugx.org/techlang/date/v/unstable.svg)](https://packagist.org/packages/techlang/date)
+[![Total Downloads](https://poser.pugx.org/techlang/date/downloads.svg)](https://packagist.org/packages/techlang/date)
+[![License](https://poser.pugx.org/techlang/date/license.svg)](https://packagist.org/packages/techlang/date)
 
 ## Introduction
 
