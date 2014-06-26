@@ -5,9 +5,14 @@ php:
   - "5.3"
 
 before_script:
+  - mkdir -p build/logs
   - composer install
 
-script: phpunit --configuration tests/phpunit.xml
+
+script: phpunit --verbose --coverage-clover build/logs/clover.xml --configuration tests/phpunit.xml
+
+after_script:
+  - php vendor/bin/coveralls -v
 
 notifications:
   email:
