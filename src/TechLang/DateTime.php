@@ -65,7 +65,7 @@ class DateTime extends \DateTime
      * Adds an amount of days, months, years, hours, minutes and seconds to a DateTime object
      *
      * @param \DateInterval $interval
-     * @return DateTime
+     * @return DateTime|false
      * @link http://php.net/manual/en/datetime.add.php
      */
     public function add($interval)

@@ -1,6 +1,7 @@
 <?php
 namespace Unit;
 
+use Exception;
 use TechLang\DateTime;
 
 /**
@@ -13,6 +14,30 @@ use TechLang\DateTime;
  */
 class DateTimeTest extends \PHPUnit_Framework_TestCase
 {
+    protected $errors = array();
+
+    public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
+    {
+        $this->errors[] = compact("errno", "errstr", "errfile", "errline", "errcontext");
+    }
+
+    protected function assertError($errstr, $errno)
+    {
+        foreach ($this->errors as $error) {
+            if (
+                false !== strpos($error["errstr"], $errstr)
+                && $error["errno"] === $errno
+            ) {
+                return;
+            }
+        }
+        $this->fail(
+            "Error with level " . $errno .
+            " and message '" . $errstr . "' not found in ",
+            var_export($this->errors, true)
+        );
+    }
+
     public function testShouldAddOneMonth()
     {
         // Given
@@ -111,5 +136,78 @@ class DateTimeTest extends \PHPUnit_Framework_TestCase
 
         // Then
         $this->assertEquals('2000-03-01 00:00:00', $date->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * Method testShouldThrowExceptionIfTimeZoneIsWrongType
+     *
+     * @expectedException Exception
+     * @throws \Exception
+     * @return void
+     */
+    public function testShouldThrowExceptionIfTimeZoneIsWrongType()
+    {
+        // Given
+
+        try {
+            // When
+            new DateTime('now', 'something');
+        }
+        catch (Exception $e) {
+            // Then
+            $this->assertContains("string given", $e->getMessage());
+
+            throw $e;
+        }
+    }
+
+    public function testShouldCreateDateTimeWithTimezoneFromFormat()
+    {
+        // Given
+
+        // When
+        $date = DateTime::createFromFormat('Y-m-d', '2000-01-01', new \DateTimeZone('UTC'));
+
+        // Then
+        $this->assertTrue($date instanceof DateTime);
+    }
+
+    public function testShouldFailCreateDateTimeWithTimezoneFromFormat()
+    {
+        // Given
+        set_error_handler(array($this, "errorHandler"));
+
+        // When
+        $date = DateTime::createFromFormat('Y-m-d', '2000-01-01', 'asd');
+
+        // Then
+        $this->assertError("string given", E_USER_WARNING);
+        $this->assertFalse($date);
+    }
+
+    public function testShouldFailAddingIntervalWhenIntervalIsWrongType()
+    {
+        // Given
+        set_error_handler(array($this, "errorHandler"));
+        $date = new DateTime();
+
+        // When
+        $result = $date->add('P1M');
+
+        // Then
+        $this->assertError("string given", E_USER_WARNING);
+        $this->assertFalse($result);
+    }
+
+    public function testShouldUseParentAddWhenMonthAmountIsZero()
+    {
+        // Given
+        $date = DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 01:02:03');
+
+        // When
+        $date->add(new \DateInterval('P1DT1H'));
+
+        // Then
+        $this->assertEquals('2000-01-02 02:02:03', $date->format('Y-m-d H:i:s'));
     }
 }
