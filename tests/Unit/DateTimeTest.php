@@ -2,6 +2,7 @@
 namespace Unit;
 
 use Exception;
+use PHPUnit\Framework\TestCase;
 use TechLang\DateTime;
 
 /**
@@ -12,7 +13,7 @@ use TechLang\DateTime;
  * @author Ionut DINU <idinu@techlang.ro>
  * @version GIT: $Id:$
  */
-class DateTimeTest extends \PHPUnit_Framework_TestCase
+class DateTimeTest extends TestCase
 {
     protected $errors = array();
 
