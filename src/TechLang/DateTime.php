@@ -1,6 +1,10 @@
 <?php
 namespace TechLang;
 
+use DateInterval;
+use DateTimeZone;
+use Exception;
+
 /**
  * Class DateTime
  *
@@ -10,52 +14,37 @@ namespace TechLang;
  */
 class DateTime extends \DateTime
 {
-    /** @var integer */
-    protected $realDay;
+    protected int $realDay;
 
     /**
-     * Method __construct
-     *
      * @param string $time
-     * @param \DateTimeZone $timezone
+     * @param DateTimeZone|null $timezone
      *
-     * @throws \Exception
-     * @return DateTime
+     * @throws Exception
      * @link http://php.net/manual/en/datetime.construct.php
      */
-    public function __construct($time = 'now', $timezone = null)
+    public function __construct(string $time = 'now', ?DateTimeZone $timezone = null)
     {
-        if (!is_null($timezone) && !$timezone instanceof \DateTimeZone) {
-            throw new \Exception('DateTime::__construct() expects parameter 2 to be DateTimeZone, ' . gettype($timezone) . ' given');
-        }
-
         parent::__construct($time, $timezone);
-        $this->realDay = $this->format('j');
+        $this->realDay = (int)$this->format('j');
     }
 
     /**
      * Parse a string into a new DateTime object according to the specified format
      *
      * @param string $format Format accepted by date().
-     * @param string $time String representing the time.
-     * @param \DateTimeZone $timezone A DateTimeZone object representing the desired time zone.
+     * @param string $datetime String representing the time.
+     * @param DateTimeZone|null $timezone A DateTimeZone object representing the desired time zone.
      *
-     * @throws \Exception
-     * @return DateTime
+     * @return DateTime|false
+     * @throws Exception
      * @link http://php.net/manual/en/datetime.createfromformat.php
      */
-    public static function createFromFormat($format, $time, $timezone = null)
+    public static function createFromFormat(string $format, string $datetime, ?DateTimeZone $timezone = null) : DateTime|false
     {
-        if (is_null($timezone)) {
-            $object = parent::createFromFormat($format, $time);
-        }
-        else {
-            if (!$timezone instanceof \DateTimeZone) {
-                $errorMessage = "DateTime::createFromFormat() expects parameter 3 to be DateTimeZone, " . gettype($timezone) . " given";
-                trigger_error($errorMessage, E_USER_WARNING);
-                return false;
-            }
-            $object = parent::createFromFormat($format, $time, $timezone);
+        $object = parent::createFromFormat($format, $datetime, $timezone);
+        if (false === $object) {
+            return false;
         }
 
         return new self($object->format('Y-m-d H:i:s'), $timezone);
@@ -64,18 +53,14 @@ class DateTime extends \DateTime
     /**
      * Adds an amount of days, months, years, hours, minutes and seconds to a DateTime object
      *
-     * @param \DateInterval $interval
-     * @return DateTime|false
+     * @param DateInterval $interval
+     *
+     * @return DateTime
+     * @throws Exception
      * @link http://php.net/manual/en/datetime.add.php
      */
-    public function add($interval)
+    public function add(DateInterval $interval): DateTime
     {
-        if (!$interval instanceof \DateInterval) {
-            $errorMessage = "DateTime::add() expects parameter 1 to be DateInterval, " . gettype($interval) . " given";
-            trigger_error($errorMessage, E_USER_WARNING);
-            return false;
-        }
-
         if (0 == $interval->m) {
             // shortcut if we don't have months to add (these are the tricky ones)
             return parent::add($interval);
@@ -83,15 +68,15 @@ class DateTime extends \DateTime
         else {
             // add the years
             if (0 != $interval->y) {
-                $yearInterval = new \DateInterval('P'.$interval->y.'Y');
+                $yearInterval = new DateInterval('P'.$interval->y.'Y');
                 parent::add($yearInterval);
             }
 
             // now comes the tricky part
-            $monthInterval = new \DateInterval('P'.$interval->m.'M');
+            $monthInterval = new DateInterval('P'.$interval->m.'M');
             $this->modify('first day of this month');
             parent::add($monthInterval);
-            $lastDayOfTheMonth = $this->format('t');
+            $lastDayOfTheMonth = (int)$this->format('t');
             $payDay = min($this->realDay, $lastDayOfTheMonth);
             $this->modify("" . ($payDay - 1) . " days");
 
@@ -113,7 +98,7 @@ class DateTime extends \DateTime
 
             $rest = trim($rest, 'T');
             if ('P' != $rest) {
-                $restInterval = new \DateInterval($rest);
+                $restInterval = new DateInterval($rest);
                 parent::add($restInterval);
 
                 // since we added days or time to our DateTime object the initial day is no longer relevant
@@ -130,9 +115,9 @@ class DateTime extends \DateTime
      *
      * @return $this
      */
-    public function forgetReferenceDay()
+    public function forgetReferenceDay() : DateTime
     {
-        $this->realDay = $this->format('j');
+        $this->realDay = (int)$this->format('j');
         return $this;
     }
 }

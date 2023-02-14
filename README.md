@@ -58,7 +58,7 @@ echo $date->format('Y-m-d');
 // this will output: 2001-02-28
 ```
 
-* add anything lower than month and you loose the initial date
+* add anything lower than month, and you loose the initial date
 ```php
 $date = new \TechLang\DateTime('2000-11-30');
 $date->add(new \DateInterval('P1M2D'));

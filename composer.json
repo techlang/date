@@ -2,26 +2,25 @@
     "name": "techlang/date",
     "description": "PHP DateTime extension",
     "keywords": ["date", "time", "DateTime"],
-    "homepage": "http://github.com/techlang/date",
+    "homepage": "https://github.com/techlang/date",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Ionut DINU",
-            "email": "idinu@techlang.ro",
-            "homepage": "http://techlang.ro"
+            "email": "idinu@techlang.ro"
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=8.0.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
         "satooshi/php-coveralls": "*"
     },
     "autoload": {
-        "psr-0" : {
-            "TechLang" : "src"
+        "psr-4" : {
+            "TechLang\\" : "src/TechLang"
         }
     }
 }
